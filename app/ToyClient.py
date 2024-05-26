@@ -4,6 +4,8 @@ from tkinter import *
 import click
 import os
 
+Database_route = os.getenv("DATABASES")
+Model_route = os.getenv("MODELS")
 toysql_art = """
 __        __   _                            _           
 \ \      / /__| | ___ ___  _ __ ___   ___  | |_ ___     
@@ -53,25 +55,29 @@ def print_data(data):
             print(Sdat)
             Sdat=""
 
-def query():
+def query(name):
+    point = name.index('.')
+    name=name[:point]
     while True:
-       q=input("ToySQL> ")
+       q=input(name+"> ")
        data={"query":q}
        data_json = json.dumps(data)
        response = requests.post('http://127.0.0.1:5000/query', headers=headers, data=data_json)
-       try:         
+       if response.status_code==500:
+           print(response.text)
+       else:            
           response=json.loads(response.text)
           print_data(response)
-       except:
-          print(response)
 
-def open_conection(data):
+
+def open_conection(data,name):
     data_json = json.dumps(data)
     print("Opening conection...")
     response = requests.post('http://127.0.0.1:5000/open', headers=headers, data=data_json)
-    print("r: ",response.text)
-    #print(toysql_art)
-    #query()
+    print(response.text)
+    if response.status_code==200:
+        print(toysql_art)
+        query(name)
 
 @click.command()
 @click.argument('name',type=str)
@@ -79,12 +85,12 @@ def open_conection(data):
 @click.argument('dimension',type=click.Tuple([int, int,int]))
 def main(name,model,dimension):
     data = {
-    "name": name,
-    "model": model,
+    "name": Database_route+"/"+name,
+    "model": Model_route+"/"+model,
     "dimension": dimension,
     "credentials":[]
      }
-    open_conection(data)
+    open_conection(data,name)
     
 if __name__ == '__main__':
     main()

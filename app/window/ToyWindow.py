@@ -5,8 +5,8 @@ import os
 
 server_process = None
 client_process = None
-server_script = os.path.abspath("../app/server/ToyServer.py")
-Cclient_script = os.path.abspath("../app/ToyClient.py")
+server_script = os.getenv("TOYSQL_SERVER")
+Cclient_script = os.getenv("TOYSQL_CLIENT")
 def btn_upDown():
     global server_process
     state=str(btn_upDown.cget("text"))
@@ -24,8 +24,7 @@ def btn_ToyConsole():
     state = str(btn_upDown.cget("text"))
     if state == "Off":
         if os.name == 'nt':  # Windows
-            path = r"C:/Users/SANTIAGO/Documents/ToyManagementSQL/app"  
-            client_process = subprocess.Popen(["cmd", "/K", f"cd /d {path}"], creationflags=subprocess.CREATE_NEW_CONSOLE)
+            client_process = subprocess.Popen(["cmd", "/K", f"cd /d {Cclient_script}"], creationflags=subprocess.CREATE_NEW_CONSOLE)
         else:  #Unix-like
             path = "C:/Users/SANTIAGO/Documents/ToyManagementSQL"  
             client_process = subprocess.Popen(['x-terminal-emulator', '-e', 'sh', '-c', f'cd {path}; exec bash'])

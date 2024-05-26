@@ -10,7 +10,7 @@ app = Flask(__name__)
 
 #This is the code to connect the server with ToySQL
 def open():
-    #try: 
+    try: 
        data=request.get_json()
        name=data.get('name')
        path=data.get('model')
@@ -18,9 +18,9 @@ def open():
        dimension=tuple(data.get('dimension'))
        credentials=list(data.get('credentials'))
        obj.open_conection(name,credentials,model=model,dimension=dimension,function=class_comparation)
-       return "Connection open. All schemas are now in RAM. :v",200
-    #except:
-        #return "Error with conecction",400
+       return jsonify({"succes": "Connection open. All schemas are now in RAM"}), 200
+    except:
+        return jsonify({"error": "Error with connection"}), 400
     
 #This is the code to provide security on database
 #def login():
@@ -34,10 +34,10 @@ def query():
        query=data.get('query')
        val=obj.query(query)
        if val==None:
-          return "Succes",200
+          return  jsonify({"succes": "Something wrong with kernel"}), 200
        return val
     except:
-       return "Error",400
+       return  jsonify({"error": "Something wrong with kernel"}), 500
    
 
 @app.route('/close', methods=['POST'])   
